@@ -33,7 +33,7 @@ public class BankAccountServiceImpl implements BankAccountService{
     BankAccount bankAccount = new BankAccount(new BigDecimal("0.00"), BankAccountStatus.ACTIVE, user);
     user.getBankAccounts().add(bankAccount);
     bankAccount = bankAccounts.save(bankAccount);
-    log.info("Create bank: " + bankAccount);
+    log.info("Create bank account: " + bankAccount);
     return bankAccount;
   }
 

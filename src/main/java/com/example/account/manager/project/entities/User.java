@@ -1,5 +1,6 @@
 package com.example.account.manager.project.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -26,6 +27,7 @@ public class User {
 
   private String surname;
 
+  @JsonIgnore
   @ToString.Exclude
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<BankAccount> bankAccounts = new ArrayList<>();
