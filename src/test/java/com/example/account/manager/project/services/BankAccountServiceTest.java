@@ -189,7 +189,7 @@ public class BankAccountServiceTest {
   @Test
   @Transactional(propagation = Propagation.SUPPORTS)
   @DirtiesContext
-  public void testTransferMoney_validBankAccount_validBankAccount() {
+  public void testTransferMoney_validBankAccountFromAndValidBankAccountTo_void() {
     User user1 = new User("Vladimir", "Dyakov");
     user1 = users.save(user1);
     User user2 = new User("Daria", "Vasilueva");
@@ -271,6 +271,35 @@ public class BankAccountServiceTest {
     BankAccount firstUserBankAccount = bankAccountService.createBankAccount(user1.getId());
     BankAccount secondUserBankAccount = bankAccountService.createBankAccount(user2.getId());
     bankAccountService.transferMoney(firstUserBankAccount.getId(), secondUserBankAccount.getId(), new BigDecimal("10.3"));
+  }
+
+  @Test
+  @Transactional(propagation = Propagation.SUPPORTS)
+  @DirtiesContext
+  public void testTransferMoney_validBankAccountFromAndValidBankAccountToWithTheSameOwner_void() {
+    User owner = new User("Vladimir", "Dyakov");
+    owner = users.save(owner);
+    BankAccount firstUserBankAccount = bankAccountService.createBankAccount(owner.getId());
+    firstUserBankAccount = bankAccountService.depositMoney(firstUserBankAccount.getId(), new BigDecimal("20.10"));
+    BankAccount secondUserBankAccount = bankAccountService.createBankAccount(owner.getId());
+    bankAccountService.transferMoney(firstUserBankAccount.getId(), secondUserBankAccount.getId(), new BigDecimal("10.3"));
+    firstUserBankAccount = accounts.findById(firstUserBankAccount.getId()).orElseThrow(() -> new IllegalStateException());
+    secondUserBankAccount = accounts.findById(secondUserBankAccount.getId()).orElseThrow(() -> new IllegalStateException());
+    assertTrue(firstUserBankAccount.getBalance().doubleValue() == 9.8);
+    assertTrue(secondUserBankAccount.getBalance().doubleValue() == 10.3);
+  }
+
+  @Test
+  @Transactional(propagation = Propagation.SUPPORTS)
+  @DirtiesContext
+  public void testTransferMoney_validSameBankAccounts_void() {
+    User owner = new User("Vladimir", "Dyakov");
+    owner = users.save(owner);
+    BankAccount bankAccount = bankAccountService.createBankAccount(owner.getId());
+    bankAccount = bankAccountService.depositMoney(bankAccount.getId(), new BigDecimal("20.10"));
+    bankAccountService.transferMoney(bankAccount.getId(), bankAccount.getId(), new BigDecimal("10.3"));
+    bankAccount = accounts.findById(bankAccount.getId()).orElseThrow(() -> new IllegalStateException());
+    assertTrue(bankAccount.getBalance().doubleValue() == 20.1);
   }
 
 }
