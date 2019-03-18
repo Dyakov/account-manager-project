@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import lombok.Data;
 import lombok.ToString;
 
@@ -17,7 +18,8 @@ import lombok.ToString;
 public class User {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="USER_SEQ")
+  @SequenceGenerator(name="USER_SEQ", sequenceName="USER_SEQ", allocationSize=1)
   private Long id;
 
   private String name;

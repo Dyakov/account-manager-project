@@ -6,9 +6,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import lombok.Data;
 
 @Data
@@ -16,7 +18,8 @@ import lombok.Data;
 public class BankAccount {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="BANK_ACCOUNT_SEQ")
+  @SequenceGenerator(name="BANK_ACCOUNT_SEQ", sequenceName="BANK_ACCOUNT_SEQ", allocationSize=1)
   private Long id;
 
   private BigDecimal balance;

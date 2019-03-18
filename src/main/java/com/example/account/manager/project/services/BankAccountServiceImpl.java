@@ -79,7 +79,7 @@ public class BankAccountServiceImpl implements BankAccountService{
       throw new BankAccountWithdrawOperationException(bankAccountIdFrom, amount);
     }
     bankAccountFrom.setBalance(bankAccountFrom.getBalance().subtract(amount));
-    bankAccountFrom.setBalance(bankAccountTo.getBalance().add(amount));
+    bankAccountTo.setBalance(bankAccountTo.getBalance().add(amount));
     log.info("Money was transferred from bank account id:" + bankAccountIdFrom + " to bank account id:" + bankAccountIdTo + " amount:" + amount);
   }
 
