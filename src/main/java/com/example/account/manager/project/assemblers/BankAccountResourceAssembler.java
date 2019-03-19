@@ -16,12 +16,14 @@ public class BankAccountResourceAssembler implements ResourceAssembler<BankAccou
   @Override
   public Resource<BankAccount> toResource(BankAccount bankAccount) {
     Resource<BankAccount> bankAccountResource = new Resource<>(bankAccount,
-          linkTo(methodOn(BankAccountController.class).get(bankAccount.getId())).withSelfRel(),
-          linkTo(methodOn(BankAccountController.class).all()).withRel("bank/accounts")
+          linkTo(methodOn(BankAccountController.class).all()).withRel("bank/accounts"),
+          linkTo(methodOn(BankAccountController.class).get(bankAccount.getId())).withSelfRel()
         );
 
     if(bankAccount.getStatus() == BankAccountStatus.ACTIVE) {
       bankAccountResource.add(
+          linkTo(methodOn(BankAccountController.class).depositMoney(bankAccount.getId(), null)).withRel("deposit"),
+          linkTo(methodOn(BankAccountController.class).withdrawMoney(bankAccount.getId(),null)).withRel("withdraw"),
           linkTo(methodOn(BankAccountController.class).block(bankAccount.getId())).withRel("block")
       );
     } else {

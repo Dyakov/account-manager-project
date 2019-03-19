@@ -6,9 +6,14 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import com.example.account.manager.project.assemblers.BankAccountResourceAssembler;
 import com.example.account.manager.project.entities.BankAccount;
 import com.example.account.manager.project.entities.BankAccountStatus;
+import com.example.account.manager.project.entities.User;
 import com.example.account.manager.project.exceptions.BankAccountNotFoundException;
 import com.example.account.manager.project.repositories.BankAccountRepository;
+import com.example.account.manager.project.requests.DepositRequest;
+import com.example.account.manager.project.requests.TransferRequest;
+import com.example.account.manager.project.requests.WithdrawRequest;
 import com.example.account.manager.project.services.BankAccountService;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.hateoas.Resource;
@@ -21,7 +26,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,6 +50,25 @@ public class BankAccountController {
         .map(assembler::toResource)
         .collect(Collectors.toList());
     return new Resources<>(accounts, linkTo(methodOn(BankAccountController.class).all()).withSelfRel());
+  }
+
+  @PutMapping("/bank/accounts")
+  public Resources<Resource<BankAccount>> transferMoney(@RequestBody TransferRequest request) {
+    service.transferMoney(request.getBankAccountIdFrom(), request.getBankAccountIdTo(), new BigDecimal(request.getAmount()));
+    return all();
+  }
+
+  @DeleteMapping("/bank/accounts")
+  public  Resources<Resource<BankAccount>> deleteBankAccount(@RequestBody BankAccount bankAccount) {
+    service.deleteBankAccount(bankAccount);
+    return all();
+  }
+
+  @PostMapping("/bank/accounts")
+  public ResponseEntity<Resource<BankAccount>> newBankAccount(@RequestBody User owner) {
+    BankAccount newBankAccount = service.createBankAccount(owner.getId());
+    return ResponseEntity.created(linkTo(methodOn(BankAccountController.class).get(newBankAccount.getId())).toUri())
+        .body(assembler.toResource(newBankAccount));
   }
 
   @GetMapping(value = "/bank/accounts/{bankAccountId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -73,5 +99,19 @@ public class BankAccountController {
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
         .body(new VndErrors.VndError("Method not allowed", "You can't activate bank account that is in the " + bankAccount.getStatus() + " status"));
   }
+
+  @PutMapping("bank/accounts/{bankAccountId}/deposit/money")
+  public ResponseEntity<ResourceSupport> depositMoney(@PathVariable Long bankAccountId, @RequestBody DepositRequest request) {
+    BankAccount bankAccount = service.depositMoney(bankAccountId, new BigDecimal(request.getAmount()));
+    return ResponseEntity.ok(assembler.toResource(bankAccount));
+  }
+
+  @PutMapping("bank/accounts/{bankAccountId}/withdraw/money")
+  public ResponseEntity<ResourceSupport> withdrawMoney(@PathVariable Long bankAccountId, @RequestBody WithdrawRequest request) {
+    BankAccount bankAccount = service.withdrawMoney(bankAccountId, new BigDecimal(request.getAmount()));
+    return ResponseEntity.ok(assembler.toResource(bankAccount));
+  }
+
+
 
 }
