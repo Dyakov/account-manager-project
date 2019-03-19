@@ -45,17 +45,17 @@ public class BankAccountController {
   }
 
   @GetMapping(value = "/bank/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Resources<Resource<BankAccount>> all() {
+  public Resources<Resource<BankAccount>> getAll() {
     List<Resource<BankAccount>> accounts = repository.findAll().stream()
         .map(assembler::toResource)
         .collect(Collectors.toList());
-    return new Resources<>(accounts, linkTo(methodOn(BankAccountController.class).all()).withSelfRel());
+    return new Resources<>(accounts, linkTo(methodOn(BankAccountController.class).getAll()).withSelfRel());
   }
 
   @PutMapping("/bank/accounts")
   public Resources<Resource<BankAccount>> transferMoney(@RequestBody TransferRequest request) {
     service.transferMoney(request.getBankAccountIdFrom(), request.getBankAccountIdTo(), new BigDecimal(request.getAmount()));
-    return all();
+    return getAll();
   }
 
   @PostMapping("/bank/accounts")
@@ -85,7 +85,7 @@ public class BankAccountController {
   @DeleteMapping("/bank/accounts/{bankAccountId}/delete")
   public  Resources<Resource<BankAccount>> deleteBankAccount(@PathVariable Long bankAccountId) {
     service.deleteBankAccount(bankAccountId);
-    return all();
+    return getAll();
   }
 
   @PutMapping("bank/accounts/{bankAccountId}/activate")

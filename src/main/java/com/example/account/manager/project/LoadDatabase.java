@@ -29,9 +29,14 @@ public class LoadDatabase {
 
       BankAccount bankAccount1 = service.createBankAccount(user1.getId());
       service.depositMoney(bankAccount1.getId(), new BigDecimal("20.20"));
-      BankAccount bankAccount2 = service.createBankAccount(user2.getId());
-      service.depositMoney(bankAccount2.getId(), new BigDecimal("10.10"));
+      BankAccount bankAccount2 = service.createBankAccount(user1.getId());
+      service.depositMoney(bankAccount2.getId(), new BigDecimal("10.01"));
       service.blockBankAccount(bankAccount2.getId());
+      BankAccount bankAccount3 = service.createBankAccount(user2.getId());
+      service.depositMoney(bankAccount3.getId(), new BigDecimal("11.12"));
+      BankAccount bankAccount4 = service.createBankAccount(user2.getId());
+      service.depositMoney(bankAccount4.getId(), new BigDecimal("15.06"));
+      service.blockBankAccount(bankAccount4.getId());
 
       accounts.findAll().forEach(bankAccount -> {
         log.info("Preloaded " + bankAccount);
