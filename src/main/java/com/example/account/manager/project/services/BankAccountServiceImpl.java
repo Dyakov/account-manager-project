@@ -38,7 +38,8 @@ public class BankAccountServiceImpl implements BankAccountService{
   }
 
   @Override
-  public void deleteBankAccount(BankAccount bankAccount) {
+  public void deleteBankAccount(Long bankAccountId) {
+    BankAccount bankAccount = bankAccounts.findById(bankAccountId).orElseThrow(() -> new BankAccountNotFoundException(bankAccountId));
     bankAccounts.delete(bankAccount);
     log.info("Delete bank account: " + bankAccount);
   }

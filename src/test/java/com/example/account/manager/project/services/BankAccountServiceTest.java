@@ -64,13 +64,14 @@ public class BankAccountServiceTest {
   }
 
   @Test
+  @Transactional(propagation = Propagation.SUPPORTS)
   @DirtiesContext
   public void testDeleteBankAccount_validBankAccount_void() {
     User user = new User("Vladimir", "Dyakov");
     user = users.save(user);
     BankAccount bankAccount = bankAccountService.createBankAccount(user.getId());
     Long bankAccountId = bankAccount.getId();
-    bankAccountService.deleteBankAccount(bankAccount);
+    bankAccountService.deleteBankAccount(bankAccountId);
     assertEquals(false, accounts.findById(bankAccountId).isPresent());
   }
 

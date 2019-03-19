@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 public interface BankAccountService {
   BankAccount createBankAccount(Long ownerID);
-  void deleteBankAccount(BankAccount bankAccount);
+  void deleteBankAccount(Long bankAccountId);
   BankAccount depositMoney(Long bankAccountId, BigDecimal amount);
   BankAccount withdrawMoney(Long bankAccountId, BigDecimal amount);
   void transferMoney(Long bankAccountIdFrom, Long bankAccountIdTo, BigDecimal amount);

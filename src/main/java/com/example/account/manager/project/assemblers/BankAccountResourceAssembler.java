@@ -17,7 +17,8 @@ public class BankAccountResourceAssembler implements ResourceAssembler<BankAccou
   public Resource<BankAccount> toResource(BankAccount bankAccount) {
     Resource<BankAccount> bankAccountResource = new Resource<>(bankAccount,
           linkTo(methodOn(BankAccountController.class).all()).withRel("bank/accounts"),
-          linkTo(methodOn(BankAccountController.class).get(bankAccount.getId())).withSelfRel()
+          linkTo(methodOn(BankAccountController.class).get(bankAccount.getId())).withSelfRel(),
+          linkTo(methodOn(BankAccountController.class).deleteBankAccount(bankAccount.getId())).withRel("delete")
         );
 
     if(bankAccount.getStatus() == BankAccountStatus.ACTIVE) {

@@ -58,12 +58,6 @@ public class BankAccountController {
     return all();
   }
 
-  @DeleteMapping("/bank/accounts")
-  public  Resources<Resource<BankAccount>> deleteBankAccount(@RequestBody BankAccount bankAccount) {
-    service.deleteBankAccount(bankAccount);
-    return all();
-  }
-
   @PostMapping("/bank/accounts")
   public ResponseEntity<Resource<BankAccount>> newBankAccount(@RequestBody User owner) {
     BankAccount newBankAccount = service.createBankAccount(owner.getId());
@@ -86,6 +80,12 @@ public class BankAccountController {
 
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
         .body(new VndErrors.VndError("Method not allowed", "You can't block bank account that is in the " + bankAccount.getStatus() + " status"));
+  }
+
+  @DeleteMapping("/bank/accounts/{bankAccountId}/delete")
+  public  Resources<Resource<BankAccount>> deleteBankAccount(@PathVariable Long bankAccountId) {
+    service.deleteBankAccount(bankAccountId);
+    return all();
   }
 
   @PutMapping("bank/accounts/{bankAccountId}/activate")
