@@ -35,13 +35,18 @@ public class User {
   public User() {
   }
 
+  public User(Long id, String name, String surname) {
+    this.id = id;
+    this.name = name;
+    this.surname = surname;
+  }
+
   public User(String name, String surname) {
     this.name = name;
     this.surname = surname;
   }
 
-  public User(String name, String surname,
-      List<BankAccount> bankAccounts) {
+  public User(String name, String surname, List<BankAccount> bankAccounts) {
     this.name = name;
     this.surname = surname;
     this.bankAccounts = bankAccounts;

@@ -35,6 +35,13 @@ public class BankAccount {
   public BankAccount() {
   }
 
+  public BankAccount(Long id, BigDecimal balance, BankAccountStatus status, User user) {
+    this.id = id;
+    this.balance = balance;
+    this.status = status;
+    this.user = user;
+  }
+
   public BankAccount(BigDecimal balance, BankAccountStatus status, User user) {
     this.balance = balance;
     this.status = status;

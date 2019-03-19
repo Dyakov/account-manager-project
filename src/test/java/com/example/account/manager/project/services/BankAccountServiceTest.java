@@ -14,7 +14,6 @@ import com.example.account.manager.project.exceptions.UserNotFoundException;
 import com.example.account.manager.project.repositories.BankAccountRepository;
 import com.example.account.manager.project.repositories.UserRepository;
 import java.math.BigDecimal;
-import javax.persistence.EntityManager;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -40,9 +39,6 @@ public class BankAccountServiceTest {
 
   @Autowired
   BankAccountService bankAccountService;
-
-  @Autowired
-  EntityManager entityManager;
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -115,7 +111,7 @@ public class BankAccountServiceTest {
     BankAccount bankAccount = bankAccountService.createBankAccount(user.getId());
     bankAccountService.depositMoney(bankAccount.getId(), new BigDecimal("50.0"));
     bankAccount = bankAccountService.withdrawMoney(bankAccount.getId(), new BigDecimal("10.5"));
-    assertEquals(true, bankAccount.getBalance().doubleValue() == 39.5);
+    assertTrue(bankAccount.getBalance().doubleValue() == 39.5);
   }
 
   @Test
@@ -199,8 +195,8 @@ public class BankAccountServiceTest {
     firstUserBankAccount = bankAccountService.depositMoney(firstUserBankAccount.getId(), new BigDecimal("20.10"));
     BankAccount secondUserBankAccount = bankAccountService.createBankAccount(user2.getId());
     bankAccountService.transferMoney(firstUserBankAccount.getId(), secondUserBankAccount.getId(), new BigDecimal("10.3"));
-    firstUserBankAccount = accounts.findById(firstUserBankAccount.getId()).orElseThrow(() -> new IllegalStateException());
-    secondUserBankAccount = accounts.findById(secondUserBankAccount.getId()).orElseThrow(() -> new IllegalStateException());
+    firstUserBankAccount = accounts.findById(firstUserBankAccount.getId()).orElseThrow(IllegalStateException::new);
+    secondUserBankAccount = accounts.findById(secondUserBankAccount.getId()).orElseThrow(IllegalStateException::new);
     assertTrue(firstUserBankAccount.getBalance().doubleValue() == 9.8);
     assertTrue(secondUserBankAccount.getBalance().doubleValue() == 10.3);
   }
@@ -284,8 +280,8 @@ public class BankAccountServiceTest {
     firstUserBankAccount = bankAccountService.depositMoney(firstUserBankAccount.getId(), new BigDecimal("20.10"));
     BankAccount secondUserBankAccount = bankAccountService.createBankAccount(owner.getId());
     bankAccountService.transferMoney(firstUserBankAccount.getId(), secondUserBankAccount.getId(), new BigDecimal("10.3"));
-    firstUserBankAccount = accounts.findById(firstUserBankAccount.getId()).orElseThrow(() -> new IllegalStateException());
-    secondUserBankAccount = accounts.findById(secondUserBankAccount.getId()).orElseThrow(() -> new IllegalStateException());
+    firstUserBankAccount = accounts.findById(firstUserBankAccount.getId()).orElseThrow(IllegalStateException::new);
+    secondUserBankAccount = accounts.findById(secondUserBankAccount.getId()).orElseThrow(IllegalStateException::new);
     assertTrue(firstUserBankAccount.getBalance().doubleValue() == 9.8);
     assertTrue(secondUserBankAccount.getBalance().doubleValue() == 10.3);
   }
@@ -299,7 +295,7 @@ public class BankAccountServiceTest {
     BankAccount bankAccount = bankAccountService.createBankAccount(owner.getId());
     bankAccount = bankAccountService.depositMoney(bankAccount.getId(), new BigDecimal("20.10"));
     bankAccountService.transferMoney(bankAccount.getId(), bankAccount.getId(), new BigDecimal("10.3"));
-    bankAccount = accounts.findById(bankAccount.getId()).orElseThrow(() -> new IllegalStateException());
+    bankAccount = accounts.findById(bankAccount.getId()).orElseThrow(IllegalStateException::new);
     assertTrue(bankAccount.getBalance().doubleValue() == 20.1);
   }
 
