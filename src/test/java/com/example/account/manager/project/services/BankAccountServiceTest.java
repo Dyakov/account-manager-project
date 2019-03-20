@@ -204,6 +204,24 @@ public class BankAccountServiceTest {
   @Test
   @Transactional(propagation = Propagation.SUPPORTS)
   @DirtiesContext
+  public void testTransferMoney_validBankAccountToWithALagerIdThanThatValidBankAccountFrom_void() {
+    User user1 = new User("Vladimir", "Dyakov");
+    user1 = users.save(user1);
+    User user2 = new User("Daria", "Vasilueva");
+    user2 = users.save(user2);
+    BankAccount firstUserBankAccount = bankAccountService.createBankAccount(user1.getId());
+    BankAccount secondUserBankAccount = bankAccountService.createBankAccount(user2.getId());
+    secondUserBankAccount = bankAccountService.depositMoney(secondUserBankAccount.getId(), new BigDecimal("20.10"));
+    bankAccountService.transferMoney(secondUserBankAccount.getId(), firstUserBankAccount.getId(), new BigDecimal("10.3"));
+    firstUserBankAccount = accounts.findById(firstUserBankAccount.getId()).orElseThrow(IllegalStateException::new);
+    secondUserBankAccount = accounts.findById(secondUserBankAccount.getId()).orElseThrow(IllegalStateException::new);
+    assertTrue(firstUserBankAccount.getBalance().doubleValue() == 10.3);
+    assertTrue(secondUserBankAccount.getBalance().doubleValue() == 9.8);
+  }
+
+  @Test
+  @Transactional(propagation = Propagation.SUPPORTS)
+  @DirtiesContext
   public void testTransferMoney_invalidBankAccountFromAndValidBankAccountTo_BankAccountNotFoundException() {
     thrown.expect(BankAccountNotFoundException.class);
     thrown.expectMessage("Could not find bank account with id:2");

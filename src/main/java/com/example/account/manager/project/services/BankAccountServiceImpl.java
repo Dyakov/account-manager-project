@@ -71,19 +71,15 @@ public class BankAccountServiceImpl implements BankAccountService{
   @Override
   public void transferMoney(Long bankAccountIdFrom, Long bankAccountIdTo, BigDecimal amount) {
     //упорядочивание счетов по идентификатору для предотвращения взаимной блокировки
-    Long firstBlockedAccountId;
-    Long secondBlockedAccountId;
+    BankAccount bankAccountFrom;
+    BankAccount bankAccountTo;
     if(bankAccountIdTo.compareTo(bankAccountIdFrom) > 0) {
-      firstBlockedAccountId = bankAccountIdFrom;
-      secondBlockedAccountId = bankAccountIdTo;
+      bankAccountFrom = bankAccounts.findById(bankAccountIdFrom).orElseThrow(() -> new BankAccountNotFoundException(bankAccountIdFrom));
+      bankAccountTo = bankAccounts.findById(bankAccountIdTo).orElseThrow(() -> new BankAccountNotFoundException(bankAccountIdTo));
     } else {
-      firstBlockedAccountId = bankAccountIdTo;
-      secondBlockedAccountId = bankAccountIdFrom;
+      bankAccountTo = bankAccounts.findById(bankAccountIdTo).orElseThrow(() -> new BankAccountNotFoundException(bankAccountIdTo));
+      bankAccountFrom = bankAccounts.findById(bankAccountIdFrom).orElseThrow(() -> new BankAccountNotFoundException(bankAccountIdFrom));
     }
-    BankAccount bankAccountFrom = bankAccounts.findById(firstBlockedAccountId)
-        .orElseThrow(() -> new BankAccountNotFoundException(firstBlockedAccountId));
-    BankAccount bankAccountTo = bankAccounts.findById(secondBlockedAccountId)
-        .orElseThrow(() -> new BankAccountNotFoundException(secondBlockedAccountId));
     checkAccountStatus(bankAccountFrom);
     checkAccountStatus(bankAccountTo);
     //Счёт не может быть отрицательным
