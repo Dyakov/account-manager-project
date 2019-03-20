@@ -58,7 +58,7 @@ public class BankAccountServiceImpl implements BankAccountService{
     BankAccount bankAccount = bankAccounts.findById(bankAccountId).orElseThrow(() -> new BankAccountNotFoundException(bankAccountId));
     checkAccountStatus(bankAccount);
     //Счёт не может быть отрицательным
-    if (bankAccount.getBalance().compareTo(amount) == -1) {
+    if (bankAccount.getBalance().compareTo(amount) < 0) {
       log.info("Could not withdraw money from bank account with id:" + bankAccountId + "; amount:" + amount);
       throw new BankAccountWithdrawOperationException(bankAccountId, amount);
     }
@@ -70,12 +70,24 @@ public class BankAccountServiceImpl implements BankAccountService{
   @Transactional(timeout = 10)
   @Override
   public void transferMoney(Long bankAccountIdFrom, Long bankAccountIdTo, BigDecimal amount) {
-    BankAccount bankAccountFrom = bankAccounts.findById(bankAccountIdFrom).orElseThrow(() -> new BankAccountNotFoundException(bankAccountIdFrom));
-    BankAccount bankAccountTo = bankAccounts.findById(bankAccountIdTo).orElseThrow(() -> new BankAccountNotFoundException(bankAccountIdTo));
+    //упорядочивание счетов по идентификатору для предотвращения взаимной блокировки
+    Long firstBlockedAccountId;
+    Long secondBlockedAccountId;
+    if(bankAccountIdTo.compareTo(bankAccountIdFrom) > 0) {
+      firstBlockedAccountId = bankAccountIdFrom;
+      secondBlockedAccountId = bankAccountIdTo;
+    } else {
+      firstBlockedAccountId = bankAccountIdTo;
+      secondBlockedAccountId = bankAccountIdFrom;
+    }
+    BankAccount bankAccountFrom = bankAccounts.findById(firstBlockedAccountId)
+        .orElseThrow(() -> new BankAccountNotFoundException(firstBlockedAccountId));
+    BankAccount bankAccountTo = bankAccounts.findById(secondBlockedAccountId)
+        .orElseThrow(() -> new BankAccountNotFoundException(secondBlockedAccountId));
     checkAccountStatus(bankAccountFrom);
     checkAccountStatus(bankAccountTo);
     //Счёт не может быть отрицательным
-    if (bankAccountFrom.getBalance().compareTo(amount) == -1) {
+    if (bankAccountFrom.getBalance().compareTo(amount) < 0) {
       log.info("Could not transfer money from bank account with id:" + bankAccountIdFrom + "; amount:" + amount);
       throw new BankAccountWithdrawOperationException(bankAccountIdFrom, amount);
     }

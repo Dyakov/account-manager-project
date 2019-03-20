@@ -202,6 +202,8 @@ public class BankAccountServiceTest {
   }
 
   @Test
+  @Transactional(propagation = Propagation.SUPPORTS)
+  @DirtiesContext
   public void testTransferMoney_invalidBankAccountFromAndValidBankAccountTo_BankAccountNotFoundException() {
     thrown.expect(BankAccountNotFoundException.class);
     thrown.expectMessage("Could not find bank account with id:2");
